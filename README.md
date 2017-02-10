@@ -33,7 +33,7 @@ With left click you make a melee attack and with the right click you use your bo
 
 With a double click on the ground you can dash.
 
-Every time you and your people kill an old one you can see its information in your bestiary. When the monster dies it gives you attribute points, a skill, and it lefts a summoning on the ground, when the summoning is done the battle field will change and another old one will appear on screen.
+Every time you and your people kill an old one you can see its information in your bestiary. When the monster dies it gives you attribute points, a skill, and it lefts a summoning on the ground, when the summoning is done another old one will appear on screen.
 
 The game is in a cenital view.
 
@@ -53,17 +53,42 @@ Your level depends on how many old ones have you killed, and how powerful they w
 
 In the war of the old ones the players can fight only one old one at a time, only one server room.
 
-The attacks of the old ones, their appearance,  and how they modify the battlefield are randomly generated.
-
-There's 4 main types of old ones
-
-#### Deep ones:
+#### Old ones:
 
 Types:
+
 1. Deep god
+  - A living mass
+  - Multiple eyes, mouths, tentacles and tongues
+  - Can invoque multiple minions of the type servitor and minion
+
+    <img src="https://s-media-cache-ak0.pinimg.com/564x/3e/ff/63/3eff6359c6639fac76930169dea359d5.jpg" width="500" height="500" />
+
+
 2. Old one
+  - More defined monster, the most common one
+  - Can have arms and legs
+  - Faster than a deep god
+  - Can invoque minions of the type minion
+  - Can be a group of monsters
+
+      <img src="https://s-media-cache-ak0.pinimg.com/564x/ab/99/0b/ab990bc94fa114139c0beda4ec875751.jpg" width="500" height="500" />
+
 3. Servitor
-4. Independent
+  - Antrophomorpic
+  - Can be a group of monsters
+  - Only meele attacks
+  - very fast
+
+        <img src="https://68.media.tumblr.com/035ddfa803c718f907c225f190567936/tumblr_o5lhe2hBPe1saew11o1_500.jpg" width="500" height="500" />
+
+4. Minion
+  - The weaker type, aracnids or snakeish monsters
+  - Only meele attacks
+
+  <img src="http://img11.deviantart.net/a38d/i/2010/198/e/7/spider_monster_by_froggyjoseguy.jpg" width="200" height="200" />
+    <img src="https://natureisanythingbutsimple.files.wordpress.com/2014/01/slytherins_basilisk.jpg?w=750" width="200" height="200" />
+
 
 Sizes:
 
@@ -72,22 +97,19 @@ The size of the old ones are measured in cubed humans (h³)
 1. Deep god: from 987h³ to 2584h³
 2. Old one: from 89h³ to 144h³
 3. Servitor: from 13h³ to 55h³
-4. Independent: from 5h³ to 8h³
+4. Minion: from 2h³ to 8h³
 
-Attributes:
+Attacks:
 
-- can invoque minions
-- Its a group of minion itself
-- Its a deformed mass
-- Has tentacles
-- Has eyes
-- Has pores
+The attacks depends on the randomly generated attributes of the old one
 
-Attack:
+If it have eye can shoot linear attacks from them (lasers, or liquid). The can be concentric patterns or with only one direction
 
-If the old one have eyes it shoots lasers. if has pores it shoots cannon balls. if it has tentacles it attack with them.
+If it have mouths the can spit ball of fire from them, they can be concentric with patterns or with only one direction
 
-The attacks are randomly generated for each monster, its going to be a slow bullet hell, like the fight system in nier automata.
+If the old one have arms or tentacles the can make meele attacks with them
+
+They can have multiple patterns for the attacks
 
 Influences:
 
@@ -95,4 +117,4 @@ Influences:
 2. Titan Souls
 3. Nier Automata
 4. Slither.io
-4. H.P Lovecraft 
+4. H.P Lovecraft
