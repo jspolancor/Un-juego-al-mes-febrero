@@ -110,8 +110,11 @@ If it have mouths the can spit ball of fire from them, they can be concentric wi
 If the old one have arms or tentacles the can make meele attacks with them
 
 They can have multiple patterns for the attacks
+### Technology
 
-Influences:
+The game will be developed using paper.js for the gameplay, socket.io and node.js for the realtime, and firebase for the database
+
+### Influences:
 
 1. Shadow of the colossus
 2. Titan Souls
