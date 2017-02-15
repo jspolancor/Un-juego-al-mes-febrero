@@ -5,9 +5,10 @@
 
 var player;
 var bg;
+var playerSpeed = 8;
 //scene size
-var SCENE_W = 500;
-var SCENE_H = 500;
+var SCENE_W = 2000;
+var SCENE_H = 2000;
 
 var goToPosition = {
   x: 0,
@@ -18,65 +19,73 @@ var goToPosition = {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  player = new Player;
-  player.create();
-
   bg = new Group();
-
   //create some background for visual reference
-  for(var i=0; i<80; i++)
+  for(var i=0; i<50; i++)
   {
-  //create a sprite and add the 3 animations
-  var rock = createSprite(random(-width, SCENE_W+width), random(-height, SCENE_H+height));
-  //cycles through rocks 0 1 2
-  rock.addAnimation("normal", "assets/rocks"+i%3+".png");
-  bg.add(rock);
+    //create a sprite and add the 3 animations
+    var rock = createSprite(random(-width, SCENE_W+width), random(-height, SCENE_H+height));
+    //cycles through rocks 0 1 2
+    rock.addAnimation("normal", "assets/rocks"+i%3+".png");
+    bg.add(rock);
   }
+
+  player = createSprite(400, 200, 50, 100);
+  var myAnimation = player.addAnimation("floating", "assets/ghost_standing0001.png", "assets/ghost_standing0007.png");
+  myAnimation.offY = 18;
+  player.addAnimation("moving", "assets/ghost_walk0001.png", "assets/ghost_walk0004.png");
 
 }
 
 function draw() {
   background(255,255,255);
-
-  //mouse trailer, the speed is inversely proportional to the mouse distance
-
-  //a camera is created automatically at the beginning
-  player.sprite.update();
-  //.5 zoom is zooming out (50% of the normal size)
-  //console.log(player.position.x);
   camera.zoom = .5;
 
-  //set the camera position to the ghost position
-  camera.position.x = player.position.x;
-  camera.position.y = player.position.y;
-  //console.log(player.position.x);
-  //limit the ghost movements
-  if(player.position.x < 0)
-    player.position.x = 0;
-  if(player.position.y < 0)
-    player.position.y = 0;
-  if(player.position.x > SCENE_W)
-    player.position.x = SCENE_W;
-  if(player.position.y > SCENE_H)
-    player.position.y = SCENE_H;
+  if(keyIsDown(RIGHT_ARROW))
+    player.setSpeed(playerSpeed, 0);
+  if(keyIsDown(DOWN_ARROW))
+    player.setSpeed(playerSpeed, 90);
+  if(keyIsDown(LEFT_ARROW))
+    player.setSpeed(playerSpeed, 180);
+  if(keyIsDown(UP_ARROW))
+    player.setSpeed(playerSpeed, 270);
+  if(keyIsDown(DOWN_ARROW) && keyIsDown(RIGHT_ARROW))
+    player.setSpeed(playerSpeed, 45);
+  if(keyIsDown(DOWN_ARROW) && keyIsDown(LEFT_ARROW))
+    player.setSpeed(playerSpeed, 135);
+  if(keyIsDown(UP_ARROW) && keyIsDown(RIGHT_ARROW))
+    player.setSpeed(playerSpeed, 315);
+  if(keyIsDown(UP_ARROW) && keyIsDown(LEFT_ARROW))
+    player.setSpeed(playerSpeed, 225);
+  //set the camera position to the players position
+  if (player.position.x > 0 && player.position.x < SCENE_W )
+    camera.position.x = player.position.x;
+  if (player.position.y > 0 && player.position.y < SCENE_H)
+    camera.position.y = player.position.y;
+    console.log(player.position.y)
+  if(player.position.y > SCENE_H + 300 + windowHeight / 2)
+    player.position.y = SCENE_H + 300 + windowHeight / 2;
+    //camera.off();
+  //if(player.position.x > SCENE_W)
+    //player.position.x = SCENE_W;
+    //camera.off();
+  //if(player.position.y > SCENE_H)
+    //player.position.y = SCENE_H;
+    //camera.off();
 
-  //draw the scene
-  //rocks first
-  drawSprites(bg);
-
-  //shadow using p5 drawing
+  fill(255);
   noStroke();
-  fill(0,0,0,20);
+  drawSprites();
 
-  //character on the top
-  drawSprite(player.sprite);
-
-  //I can turn on and off the camera at any point to restore
-  //the normal drawing coordinates, the frame will be drawn at
-  //the absolute 0,0 (try to see what happens if you don't turn it off
   camera.off();
 }
 
-function mouseClicked(){
-  player.sprite.attractionPoint(1, mouseX, mouseY);
+function keyReleased() {
+  player.setSpeed(0, 0);
+  return false;
+}
+
+function keyPressed(){
+  if(keyCode == 32)
+    console.log('dash');
 }
