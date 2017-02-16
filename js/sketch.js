@@ -10,7 +10,7 @@ var SCENE_H = 2000;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  socket = io.connect('http://localhost:8080');
+  socket = io.connect('https://war-of-the-old-ones.herokuapp.com');
   socket.on('connection', function(){
     console.log('New connection');
   });
