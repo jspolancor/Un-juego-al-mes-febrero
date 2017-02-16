@@ -10,11 +10,11 @@ var path = require('path');
 
 // Using the filesystem module
 var fs = require('fs');
-
+var port = process.env.PORT || 8080;
 var server = http.createServer(handleRequest);
-server.listen(8080);
+server.listen(port);
 
-console.log('Server started on port 8080');
+console.log('Our app is running on http://localhost:' + port);
 
 function handleRequest(req, res) {
   // What did we request?
@@ -83,6 +83,6 @@ io.sockets.on('connection',
     socket.on('disconnect', function() {
       console.log("Client has disconnected");
     });
-    
+
   }
 );
