@@ -1,4 +1,10 @@
-function Player () {
+function Player (id) {
+
+  this.id = null;
+
+  if(id != null){
+    this.id = id;
+  }
 
   this.sprite = createSprite(400, 200, 100, 100);
   this.sprite.addAnimation("standing", "assets/player/player02.png");
@@ -13,45 +19,52 @@ function Player () {
 
   // Move the player around
   this.move = function(){
-
     if(keyIsDown(RIGHT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 0);
       this.sprite.changeAnimation('moving-right');
+      this.sendPlayerData(3);
     }
 
     if(keyIsDown(DOWN_ARROW)){
       this.sprite.setSpeed(playerSpeed, 90);
       this.sprite.changeAnimation('moving-down');
+      this.sendPlayerData(5);
     }
 
     if(keyIsDown(LEFT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 180);
       this.sprite.changeAnimation('moving-left');
+      this.sendPlayerData(7);
     }
 
     if(keyIsDown(UP_ARROW)){
       this.sprite.setSpeed(playerSpeed, 270);
       this.sprite.changeAnimation('moving-up');
+      this.sendPlayerData(1);
     }
 
     if(keyIsDown(DOWN_ARROW) && keyIsDown(RIGHT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 45);
       this.sprite.changeAnimation('moving-down-right');
-    }
-
-    if(keyIsDown(DOWN_ARROW) && keyIsDown(LEFT_ARROW)){
-      this.sprite.setSpeed(playerSpeed, 135);
-      this.sprite.changeAnimation('moving-down-left');
+      this.sendPlayerData(4);
     }
 
     if(keyIsDown(UP_ARROW) && keyIsDown(RIGHT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 315);
       this.sprite.changeAnimation('moving-up-right');
+      this.sendPlayerData(2);
+    }
+
+    if(keyIsDown(DOWN_ARROW) && keyIsDown(LEFT_ARROW)){
+      this.sprite.setSpeed(playerSpeed, 135);
+      this.sprite.changeAnimation('moving-down-left');
+      this.sendPlayerData(6);
     }
 
     if(keyIsDown(UP_ARROW) && keyIsDown(LEFT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 225);
       this.sprite.changeAnimation('moving-up-left');
+      this.sendPlayerData(8);
     }
 
     //set the camera position to the players position
@@ -82,15 +95,57 @@ function Player () {
 
   }
 
+  this.changePosition = function(x, y, direction){
+    this.sprite.position.x = x;
+    this.sprite.position.y = y;
+    
+    switch (direction) {
+      case 1:
+          this.sprite.changeAnimation('moving-up');
+        break;
+      case 2:
+          this.sprite.changeAnimation('moving-up-right');
+        break;
+      case 3:
+          this.sprite.changeAnimation('moving-right');
+        break;
+      case 4:
+          this.sprite.changeAnimation('moving-down-right');
+        break;
+      case 5:
+          this.sprite.changeAnimation('moving-down');
+        break;
+      case 6:
+          this.sprite.changeAnimation('moving-down-left');
+        break;
+      case 7:
+          this.sprite.changeAnimation('moving-left');
+        break;
+      case 8:
+          this.sprite.changeAnimation('moving-up-left');
+        break;
+      case 9:
+          this.sprite.changeAnimation('standing');
+        break;
+      default:
+
+    }
+  }
+
   // Stops all animations
   this.keyReleased = function(){
     this.sprite.setSpeed(0, 0);
     this.sprite.changeAnimation('standing');
+    this.sendPlayerData(9);
     return false;
   }
 
   this.dash = function(){
 
+  }
+
+  this.sendPlayerData = function(direction){
+    socket.emit('playerMovement', { x: this.sprite.position.x, y: this.sprite.position.y, dir: direction });
   }
 
 }
