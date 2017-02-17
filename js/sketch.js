@@ -6,14 +6,20 @@ var cameraZoom = 1;
 var i;
 var currentUser = false;
 //scene size
-var SCENE_W = 2000;
-var SCENE_H = 2000;
+var SCENE_W = 3000;
+var SCENE_H = 3000;
 
 function setup() {
 
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
-      currentUser = user;
+
+      currentUser = {
+        nickname: user.displayName
+      };
+
+      console.log(currentUser);
+
       $('#modalRegister').modal('hide');
       $('#modalLogin').modal('hide');
     } else {
@@ -42,7 +48,7 @@ function setup() {
       return;
     }
 
-    players.push(new Player(data.id));
+    players.push(new Player(data.id, data.nick));
 
   });
 
@@ -58,12 +64,14 @@ function setup() {
     bg.add(rock);
   }
 
-  player = new Player;
+  player = new Player(null, currentUser.nickname);
 
 }
 
 function draw() {
 
+  player.nickname = currentUser.nickname;
+  //console.log(currentUser.nickname);
   background(51);
   camera.zoom = cameraZoom;
   player.move();
@@ -71,6 +79,17 @@ function draw() {
   noStroke();
   drawSprites();
   camera.off();
+
+  for (var i = 0; i < players.length; i++) {
+
+    if (players[i].nickname) {
+      fill(255, 255, 255);
+      textAlign(CENTER);
+      textSize(10);
+      text(players[i].nickname, players[i].sprite.position.x + 400, players[i].sprite.position.y + 200);
+    }
+
+  }
 
 }
 

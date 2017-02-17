@@ -4,12 +4,24 @@ function registerUser(){
   var email = $('#register-email').val();
   var password = $('#register-password').val();
 
-  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+  if (nickname.length < 3) {
+    $('#errors-register').html('Nickname should be at least 3 characters');
+    return;
+  }
+
+  firebase.auth().createUserWithEmailAndPassword(email, password).then(function(user) {
+
+    user.updateProfile({
+      displayName: nickname
+    }).then(function() { }, function(error) { });
+
+  }).catch(function(error){
+
     // Handle Errors here.
     var errorCode = error.code;
     var errorMessage = error.message;
     $('#errors-register').html(errorMessage);
-    // ...
+
   });
 
 }

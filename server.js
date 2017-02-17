@@ -72,7 +72,7 @@ io.sockets.on('connection',
       function(data) {
 
         // Send it to all other clients
-        socket.broadcast.emit('playerMovement', {x: data.x, y: data.y, id: socket.id, dir: data.dir});
+        socket.broadcast.emit('playerMovement', {x: data.x, y: data.y, id: socket.id, dir: data.dir, nick: data.nick});
 
         // This is a way to send to everyone including sender
         // io.sockets.emit('message', "this goes to everyone");

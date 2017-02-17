@@ -1,9 +1,14 @@
-function Player (id) {
+function Player (id, nickname) {
 
   this.id = null;
+  this.nickname = null;
 
   if(id != null){
     this.id = id;
+  }
+
+  if(nickname != null){
+    this.nickname = nickname;
   }
 
   this.sprite = createSprite(400, 200, 100, 100);
@@ -93,12 +98,19 @@ function Player (id) {
       this.sprite.position.x = windowWidth / 2 * -1 + 25;
     }
 
+    if (currentUser.nickname) {
+      fill(255, 255, 255);
+      textSize(10);
+      textAlign(CENTER);
+      text(currentUser.nickname, this.sprite.position.x, this.sprite.position.y - 20);
+    }
+
   }
 
   this.changePosition = function(x, y, direction){
     this.sprite.position.x = x;
     this.sprite.position.y = y;
-    
+
     switch (direction) {
       case 1:
           this.sprite.changeAnimation('moving-up');
@@ -130,6 +142,14 @@ function Player (id) {
       default:
 
     }
+
+    /*if (this.nickname) {
+      fill(255, 255, 255);
+      textAlign(CENTER);
+      textSize(40);
+      text(this.nickname, this.sprite.position.x, this.sprite.position.y - 20);
+    }*/
+
   }
 
   // Stops all animations
@@ -145,7 +165,7 @@ function Player (id) {
   }
 
   this.sendPlayerData = function(direction){
-    socket.emit('playerMovement', { x: this.sprite.position.x, y: this.sprite.position.y, dir: direction });
+    socket.emit('playerMovement', { x: this.sprite.position.x, y: this.sprite.position.y, dir: direction, nick: this.nickname });
   }
 
 }
