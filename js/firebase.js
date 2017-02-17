@@ -13,7 +13,9 @@ function registerUser(){
 
     user.updateProfile({
       displayName: nickname
-    }).then(function() { }, function(error) { });
+    }).then(function() {
+      location.reload();
+    }, function(error) { });
 
   }).catch(function(error){
 
@@ -48,7 +50,8 @@ function loginUser(){
 
 function logout(){
   firebase.auth().signOut().then(function() {
-    // Sign-out successful.
+    players = [];
+    currentUser = {};
   }, function(error) {
     // An error happened.
   });

@@ -6,8 +6,8 @@ var cameraZoom = 1;
 var i;
 var currentUser = false;
 //scene size
-var SCENE_W = 3000;
-var SCENE_H = 3000;
+var SCENE_W = 10000;
+var SCENE_H = 10000;
 
 function setup() {
 
@@ -83,10 +83,10 @@ function draw() {
   for (var i = 0; i < players.length; i++) {
 
     if (players[i].nickname) {
-      fill(255, 255, 255);
-      textAlign(CENTER);
-      textSize(10);
-      text(players[i].nickname, players[i].sprite.position.x + 400, players[i].sprite.position.y + 200);
+      //fill(255, 255, 255);
+      //textAlign(CENTER);
+      //textSize(10);
+      //text(players[i].nickname, players[i].sprite.position.x, players[i].sprite.position.y + 20);
     }
 
   }
