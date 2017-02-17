@@ -1,6 +1,15 @@
 <html>
 <head>
   <meta charset="UTF-8">
+
+  <script
+  src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+  integrity="sha256-/SIrNqv8h6QGKDuNoLGA4iret+kyesCkHGzVUUV0shc="
+  crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  <script language="javascript" type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script language="javascript" type="text/javascript" src="libraries/p5.js"></script>
   <!-- uncomment lines below to include extra p5 libraries -->
   <!--<script language="javascript" src="libraries/p5.dom.js"></script>-->
@@ -9,10 +18,62 @@
   <script language="javascript" type="text/javascript" src="js/player.js"></script>
   <script language="javascript" type="text/javascript" src="js/sketch.js"></script>
   <script language="javascript" type="text/javascript" src="socket.io-1.4.5.js"></script>
-  <!-- this line removes any default padding and style. you might only need one of these values set. -->
+  <script src="https://www.gstatic.com/firebasejs/3.6.9/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyC39A7uIGfn9AAry_GPBBPIxTZBuo9615k",
+      authDomain: "war-of-the-old-ones.firebaseapp.com",
+      databaseURL: "https://war-of-the-old-ones.firebaseio.com",
+      storageBucket: "war-of-the-old-ones.appspot.com",
+      messagingSenderId: "195099341416"
+    };
+    firebase.initializeApp(config);
+  </script>
+
   <style> body {padding: 0; margin: 0;} </style>
 </head>
 
 <body>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">Login</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="playersName" placeholder="Nickname" name="playersName" id="nickname" required>
+            <br><br>
+            <input type="email" name="email" placeholder="E-mail" id="email" required>
+            <br><br>
+            <input type="password" name="password" placeholder="Password" id="password" required>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn">REGISTER</button>
+          <button type="button" class="btn btn-primary" onclick="registerUser()">PLAY</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function registerUser(){
+      var nickname = $('#nickname').val();
+      var email = $('#email').val();
+      var password = $('#password').val();
+      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // ...
+      });
+    }
+
+  </script>
+
 </body>
 </html>

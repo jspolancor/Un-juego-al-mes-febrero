@@ -4,16 +4,25 @@ var bg;
 var playerSpeed = 6;
 var cameraZoom = 1;
 var i;
+var currentUser = false;
 //scene size
 var SCENE_W = 2000;
 var SCENE_H = 2000;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  socket = io.connect('https://war-of-the-old-ones.herokuapp.com');
-  socket.on('connection', function(){
-    console.log('New connection');
+
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      currentUser = user;
+      $('#myModal').modal('hide');
+    } else {
+      // Show login register form
+      $('#myModal').modal('toggle');
+    }
   });
+
+  createCanvas(windowWidth, windowHeight);
+  socket = io.connect(location.href);
 
   socket.on('playerMovement', function(data){
 
@@ -72,19 +81,4 @@ function keyPressed(){
   if(keyCode == 32){
     player.dash();
   }
-}
-
-// Function for sending to the socket
-function sendPlayer(xpos, ypos) {
-  // We are sending!
-  console.log("sendmouse: " + xpos + " " + ypos);
-
-  // Make a little object with  and y
-  var data = {
-    x: xpos,
-    y: ypos
-  };
-
-  // Send that object to the socket
-  socket.emit('mouse',data);
 }
