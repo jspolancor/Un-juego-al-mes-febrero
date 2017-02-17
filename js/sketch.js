@@ -14,10 +14,11 @@ function setup() {
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       currentUser = user;
-      $('#myModal').modal('hide');
+      $('#modalRegister').modal('hide');
+      $('#modalLogin').modal('hide');
     } else {
       // Show login register form
-      $('#myModal').modal('toggle');
+      $('#modalRegister').modal('toggle');
     }
   });
 

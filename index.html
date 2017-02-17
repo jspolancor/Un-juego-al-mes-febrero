@@ -36,44 +36,61 @@
 
 <body>
 
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+  <!-- Modal Register-->
+  <div class="modal fade" id="modalRegister" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
+        <img class="logo" src="https://firebasestorage.googleapis.com/v0/b/polancomco.appspot.com/o/public%2Fwar-of-the-old-ones-logo.jpg?alt=media&token=9ea24bc4-eeaf-4c17-982c-55260e32db2c" alt="">
         <div class="modal-header">
-          <h4 class="modal-title" id="myModalLabel">Login</h4>
+          <h4 class="modal-title" id="myModalLabel">Register</h4>
         </div>
         <div class="modal-body">
           <form>
-            <input type="playersName" placeholder="Nickname" name="playersName" id="nickname" required>
+            <input type="playersName" placeholder="Nickname" name="playersName" id="register-nickname" required>
             <br><br>
-            <input type="email" name="email" placeholder="E-mail" id="email" required>
+            <input type="email" name="email" placeholder="E-mail" id="register-email" required>
             <br><br>
-            <input type="password" name="password" placeholder="Password" id="password" required>
+            <input type="password" name="password" placeholder="Password" id="register-password" required>
           </form>
         </div>
+        <div class="padding small-txt">
+          Already have an account? <a onclick="openLogin()">Login</a>
+        </div>
+        <div id="errors-register"></div>
         <div class="modal-footer">
-          <button type="button" class="btn">REGISTER</button>
           <button type="button" class="btn btn-primary" onclick="registerUser()">PLAY</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    function registerUser(){
-      var nickname = $('#nickname').val();
-      var email = $('#email').val();
-      var password = $('#password').val();
-      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // ...
-      });
-    }
+  <!-- Modal Login-->
+  <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+      <img class="logo" src="https://firebasestorage.googleapis.com/v0/b/polancomco.appspot.com/o/public%2Fwar-of-the-old-ones-logo.jpg?alt=media&token=9ea24bc4-eeaf-4c17-982c-55260e32db2c" alt="">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">Login</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <input type="email" name="email" placeholder="E-mail" id="login-email" required>
+            <br><br>
+            <input type="password" name="password" placeholder="Password" id="login-password" required>
+          </form>
+        </div>
+        <div class="padding small-txt">
+          Don't have an account? <a onclick="openRegister()">Register</a>
+        </div>
+        <div id="errors-login"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="loginUser()">PLAY</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  </script>
+    <script language="javascript" type="text/javascript" src="js/firebase.js"></script>
 
 </body>
 </html>
