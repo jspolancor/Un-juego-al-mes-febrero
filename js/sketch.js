@@ -12,20 +12,19 @@ var SCENE_H = 10000;
 function setup() {
 
   firebase.auth().onAuthStateChanged(function(user) {
+
     if (user) {
 
       currentUser = {
         nickname: user.displayName
       };
 
-      console.log(currentUser);
-
       $('#modalRegister').modal('hide');
       $('#modalLogin').modal('hide');
     } else {
-      // Show login register form
       $('#modalRegister').modal('toggle');
     }
+
   });
 
   createCanvas(windowWidth, windowHeight);
@@ -45,6 +44,10 @@ function setup() {
 
     if(exists){
       players[index].changePosition(data.x, data.y, data.dir);
+      if (data.shooting) {
+        players[index].direction = data.dir;
+        players[index].shoot(true, data.dir);
+      }
       return;
     }
 
@@ -71,7 +74,6 @@ function setup() {
 function draw() {
 
   player.nickname = currentUser.nickname;
-  //console.log(currentUser.nickname);
   background(51);
   camera.zoom = cameraZoom;
   player.move();
@@ -79,17 +81,6 @@ function draw() {
   noStroke();
   drawSprites();
   camera.off();
-
-  for (var i = 0; i < players.length; i++) {
-
-    if (players[i].nickname) {
-      //fill(255, 255, 255);
-      //textAlign(CENTER);
-      //textSize(10);
-      //text(players[i].nickname, players[i].sprite.position.x, players[i].sprite.position.y + 20);
-    }
-
-  }
 
 }
 
@@ -99,6 +90,6 @@ function keyReleased() {
 
 function keyPressed(){
   if(keyCode == 32){
-    player.dash();
+    player.shoot(false);
   }
 }

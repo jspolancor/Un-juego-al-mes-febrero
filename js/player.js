@@ -10,6 +10,8 @@ function Player (id, nickname) {
   if(nickname != null){
     this.nickname = nickname;
   }
+  this.bulletImage = loadImage("assets/bullet.png");
+  this.direction = 9;
 
   this.sprite = createSprite(400, 200, 100, 100);
   this.sprite.addAnimation("standing", "assets/player/player02.png");
@@ -27,49 +29,57 @@ function Player (id, nickname) {
     if(keyIsDown(RIGHT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 0);
       this.sprite.changeAnimation('moving-right');
-      this.sendPlayerData(3);
+      this.sendPlayerData(3, false);
+      this.direction = 0;
     }
 
     if(keyIsDown(DOWN_ARROW)){
       this.sprite.setSpeed(playerSpeed, 90);
       this.sprite.changeAnimation('moving-down');
-      this.sendPlayerData(5);
+      this.sendPlayerData(5, false);
+      this.direction = 90;
     }
 
     if(keyIsDown(LEFT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 180);
       this.sprite.changeAnimation('moving-left');
-      this.sendPlayerData(7);
+      this.sendPlayerData(7, false);
+      this.direction = 180;
     }
 
     if(keyIsDown(UP_ARROW)){
       this.sprite.setSpeed(playerSpeed, 270);
       this.sprite.changeAnimation('moving-up');
-      this.sendPlayerData(1);
+      this.sendPlayerData(1, false);
+      this.direction = 270;
     }
 
     if(keyIsDown(DOWN_ARROW) && keyIsDown(RIGHT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 45);
       this.sprite.changeAnimation('moving-down-right');
-      this.sendPlayerData(4);
+      this.sendPlayerData(4, false);
+      this.direction = 45;
     }
 
     if(keyIsDown(UP_ARROW) && keyIsDown(RIGHT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 315);
       this.sprite.changeAnimation('moving-up-right');
-      this.sendPlayerData(2);
+      this.sendPlayerData(2, false);
+      this.direction = 315;
     }
 
     if(keyIsDown(DOWN_ARROW) && keyIsDown(LEFT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 135);
       this.sprite.changeAnimation('moving-down-left');
-      this.sendPlayerData(6);
+      this.sendPlayerData(6, false);
+      this.direction = 135;
     }
 
     if(keyIsDown(UP_ARROW) && keyIsDown(LEFT_ARROW)){
       this.sprite.setSpeed(playerSpeed, 225);
       this.sprite.changeAnimation('moving-up-left');
-      this.sendPlayerData(8);
+      this.sendPlayerData(8, false);
+      this.direction = 225;
     }
 
     //set the camera position to the players position
@@ -143,29 +153,41 @@ function Player (id, nickname) {
 
     }
 
-    /*if (this.nickname) {
-      fill(255, 255, 255);
-      textAlign(CENTER);
-      textSize(40);
-      text(this.nickname, this.sprite.position.x, this.sprite.position.y - 20);
-    }*/
-
   }
 
   // Stops all animations
   this.keyReleased = function(){
     this.sprite.setSpeed(0, 0);
     this.sprite.changeAnimation('standing');
-    this.sendPlayerData(9);
+    this.sendPlayerData(9, false);
+    this.direction = 0;
     return false;
+  }
+
+  this.shoot = function(remote, direction){
+
+    var bullet = createSprite(this.sprite.position.x, this.sprite.position.y);
+    bullet.addImage(this.bulletImage);
+    bullet.setSpeed(9, this.direction);
+    bullet.life = 300;
+    if (remote) {
+      // nothing
+    }else{
+      this.sendPlayerData(this.direction, true);
+    }
+
   }
 
   this.dash = function(){
 
   }
 
-  this.sendPlayerData = function(direction){
-    socket.emit('playerMovement', { x: this.sprite.position.x, y: this.sprite.position.y, dir: direction, nick: this.nickname });
+  this.sendPlayerData = function(direction, shooting){
+    var bullet = false;
+    if(shooting){
+      bullet = true;
+    }
+    socket.emit('playerMovement', { x: this.sprite.position.x, y: this.sprite.position.y, dir: direction, nick: this.nickname, shooting: bullet });
   }
 
 }
