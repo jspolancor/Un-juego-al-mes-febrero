@@ -3,6 +3,8 @@ function Player (id, nick) {
   this.nick = nick;
   this.id = id;
   this.sprite = null;
+  this.direction = 0;
+  this.firing = false;
 
   this.create = function(){
 
@@ -37,6 +39,7 @@ function Player (id, nick) {
 
     this.sprite.body.fixedRotation = true;
     this.sprite.body.setZeroVelocity();
+    this.direction = 0;
 
     if (cursors.down.isDown) {
         this.sprite.body.moveDown(300);
@@ -53,49 +56,100 @@ function Player (id, nick) {
     if (cursors.left.isDown && !cursors.up.isDown && !cursors.down.isDown && !cursors.right.isDown) {
         this.sprite.animations.play('walk-left', 11, false);
         this.weapon.fireAngle = 180;
+        this.direction = 7;
     } else if (cursors.right.isDown && !cursors.up.isDown && !cursors.down.isDown && !cursors.left.isDown) {
         this.sprite.animations.play('walk-right', 11, false);
         this.weapon.fireAngle = 0;
+        this.direction = 3;
     }
 
     if (cursors.down.isDown && cursors.right.isDown) {
         this.sprite.animations.play('walk-down-right', 11, false);
         this.weapon.fireAngle = 45;
+        this.direction = 4;
     } else if (cursors.down.isDown && cursors.left.isDown) {
         this.sprite.animations.play('walk-down-left', 11, false);
         this.weapon.fireAngle = 135;
+        this.direction = 6;
     } else if (cursors.down.isDown) {
         this.sprite.animations.play('walk-down', 11, false);
         this.weapon.fireAngle = 90;
+        this.direction = 5;
     }
 
     if (cursors.up.isDown && cursors.right.isDown) {
         this.sprite.animations.play('walk-up-right', 11, false);
         this.weapon.fireAngle = 315;
+        this.direction = 2;
     } else if (cursors.up.isDown && cursors.left.isDown) {
         this.sprite.animations.play('walk-up-left', 11, false);
         this.weapon.fireAngle = 225;
+        this.direction = 8;
     } else if (cursors.up.isDown) {
         this.sprite.animations.play('walk-up', 11, false);
         this.weapon.fireAngle = 270;
+        this.direction = 1;
     }
 
     if (fireButton.isDown) {
         this.weapon.fire();
+        this.firing = true;
     }
 
-    this.playerName.alignTo(this.sprite, Phaser.BOTTOM_CENTER, 0);
+    // If no arrow keys are pressed, stop the movement
 
   }
 
-  this.sendPlayerData = function(direction, shooting, nick, death, id){
-    socket.emit('playerMovement', {
-      direction: direction,
-      shooting: shooting,
-      nick: nick,
-      death: death,
-      id: id
-    });
+  // Moves the player around
+  this.move = function(direction, shooting, death){
+    switch (direction) {
+      case 0:
+        break;
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      case 4:
+        break;
+      case 5:
+        break;
+      case 6:
+        break;
+      case 7:
+        break;
+      case 8:
+        break;
+      default:
+        break;
+
+    }
+    if (death) {
+      // Death animation
+      this.sprite.destroy();
+    }
+  }
+
+  this.stopMoving(){
+    this.sprite.body.setZeroVelocity();
+    this.direction = 0;
+  }
+
+  this.alignName = function(){
+    this.playerName.alignTo(this.sprite, Phaser.BOTTOM_CENTER, 0);
+  }
+
+  this.sendPlayerData = function(direction, shooting, nick, death){
+    if (this.id != null) {
+      socket.emit('playerMovement', {
+        direction: direction,
+        shooting: shooting,
+        nick: nick,
+        death: death,
+        id: this.id
+      });
+    }
   }
 
 }

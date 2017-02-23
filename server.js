@@ -73,12 +73,11 @@ io.sockets.on('connection',
 
         // Send it to all other clients
         socket.broadcast.emit('playerMovement', {
-          x: data.x,
-          y: data.y,
-          id: socket.id,
-          dir: data.dir,
+          direction: data.direction,
+          shooting: data.shooting,
           nick: data.nick,
-          shooting: data.shooting
+          death: data.death,
+          id: socket.id
         });
 
         // This is a way to send to everyone including sender
@@ -88,7 +87,10 @@ io.sockets.on('connection',
     );
 
     socket.on('disconnect', function() {
-      console.log("Client has disconnected");
+      console.log("Client " + socket.id + " has disconnected");
+      socket.broadcast.emit('disconnection', {
+        id: socket.id
+      });
     });
 
   }

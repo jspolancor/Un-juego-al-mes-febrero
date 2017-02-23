@@ -14,14 +14,17 @@ function preload() {
 var player;
 var cursors;
 var fireButton;
+var socket;
 
 function create() {
+
+    socket = io.connect(location.href);
 
     game.add.tileSprite(0, 0, 1920, 1920, 'background');
     game.world.setBounds(0, 0, 1920, 1920);
     game.physics.startSystem(Phaser.Physics.P2JS);
 
-    player = new Player(666, 'Player');
+    player = new Player(null, 'Player');
     player.create();
 
     game.physics.p2.enable(player.sprite);
@@ -34,7 +37,7 @@ function create() {
     firebase.auth().onAuthStateChanged(function(user) {
 
         if (user) {
-            
+            player.id = user.uid;
             player.nick = user.displayName;
             player.playerName.text = user.displayName;
             $('#modalRegister').modal('hide');
@@ -48,10 +51,31 @@ function create() {
 
     });
 
+    // socket actions
+
+    // One of the players are moving
+    // Move or create new sprite
+    socket.on('playerMovement', function(data){
+      console.log(data);
+    });
+
+    // One of the player is disconnected
+    // Destroy the sprites and the player
+    socket.on('disconnection', function(data){
+
+    });
+
+    // One of the player is dead
+    // Destroy the sprites and the player
+    socket.on('death', function(data){
+
+    });
+
 }
 
 function update() {
   player.listenMovement();
+  player.alignName();
 }
 
 function render() {
