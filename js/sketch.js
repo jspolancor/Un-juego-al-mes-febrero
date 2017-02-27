@@ -59,13 +59,9 @@ function create() {
 
     });
 
-    // socket actions
-
     // One of the players are moving
     // Move or create new sprite
     socket.on('playerData', function(data){
-
-      console.log(data.position);
 
       playerExists = false;
       for (var i = 0; i < players.length; i++) {
