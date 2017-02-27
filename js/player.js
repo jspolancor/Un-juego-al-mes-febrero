@@ -48,12 +48,13 @@ function Player (nick) {
     if (fireButton.isDown && !this.shooting) {
       //console.log('Fire start');
       this.shooting = true;
-      this.move(this.direction, this.shooting, this.isDeath, true);
-      this.sendMovementData();
+      this.weapon.fire();
+      //this.move(this.direction, this.shooting, this.isDeath, true);
+      this.sendMovementData(true);
     }else if(!fireButton.isDown && this.shooting){
       this.shooting = false;
-      this.move(this.direction, this.shooting, this.isDeath, true);
-      this.sendMovementData();
+      //this.move(this.direction, this.shooting, this.isDeath, true);
+      this.sendMovementData(true);
       //console.log('fire end');
     }
 
@@ -98,23 +99,20 @@ function Player (nick) {
       if (position) {
           this.sprite.position.x = position.x;
           this.sprite.position.y = position.y;
-          //game.physics.arcade.moveToXY(this.sprite,position.x,position.y);
       }
-      
+
       switch (direction) {
         case 0:
           this.sprite.body.velocity.x = 0;
           this.sprite.body.velocity.y = 0;
           break;
         case 1:
-          //this.sprite.body.setZeroVelocity();
           this.sprite.body.velocity.x = 0;
           this.sprite.body.velocity.y = -200;
           this.sprite.animations.play('walk-up', 11, true);
           this.weapon.fireAngle = 270;
           break;
         case 2:
-          //this.sprite.body.setZeroVelocity();
           this.sprite.body.velocity.y = -200; //up
           this.sprite.body.velocity.x = 200; // right
           this.sprite.animations.play('walk-up-right', 11, true);
@@ -127,7 +125,6 @@ function Player (nick) {
           this.weapon.fireAngle = 0;
           break;
         case 4:
-          //this.sprite.body.setZeroVelocity();
           this.sprite.body.velocity.y = 200; //down
           this.sprite.body.velocity.x = 200; // right
           this.sprite.animations.play('walk-down-right', 11, true);
@@ -140,7 +137,6 @@ function Player (nick) {
           this.weapon.fireAngle = 90;
           break;
         case 6:
-          //this.sprite.body.setZeroVelocity();
           this.sprite.body.velocity.y = 200; //down
           this.sprite.body.velocity.x = -200; // left
           this.sprite.animations.play('walk-down-left', 11, true);
@@ -153,18 +149,16 @@ function Player (nick) {
           this.weapon.fireAngle = 180;
           break;
         case 8:
-          //this.sprite.body.setZeroVelocity();
           this.sprite.body.velocity.y = -200; //up
           this.sprite.body.velocity.x = -200; // left
           this.sprite.animations.play('walk-up-left', 11, true);
           this.weapon.fireAngle = 225;
           break;
         default:
-          //this.sprite.body.setZeroVelocity();
+
           break;
       }
 
-      //this.alignName();
       this.direction = direction;
       this.sendMovementData(currentPlayer);
 
@@ -175,7 +169,7 @@ function Player (nick) {
     this.direction = direction;
     direction != 0 ? this.standing = false : this.standing = true;
 
-    if (shooting) {
+    if (shooting && !currentPlayer) {
       this.weapon.fire();
       this.shooting = true;
     }else{
