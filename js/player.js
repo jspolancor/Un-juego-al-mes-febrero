@@ -93,6 +93,7 @@ function Player (nick) {
   this.move = function(direction, shooting, death, currentPlayer, position){
 
     if (this.direction != direction && this.sprite.body) {
+      this.sprite.body.collideWorldBounds = true;
       this.sprite.body.fixedRotation = true;
       this.sprite.body.static = true;
 

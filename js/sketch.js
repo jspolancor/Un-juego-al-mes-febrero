@@ -26,13 +26,15 @@ function create() {
     game.add.tileSprite(0, 0, 1920, 1920, 'background');
     game.world.setBounds(0, 0, 1920, 1920);
     game.physics.startSystem(Phaser.Physics.ARCADE);
+    game.physics.arcade.restitution = 0.9;
+    game.physics.arcade.setBoundsToWorld();
 
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
 
     player = new Player('Player');
     player.create(null, null);
-    game.physics.arcade.enable(player.sprite);
+    game.physics.arcade.enable(player.sprite, false);
 
     fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     cursors = game.input.keyboard.createCursorKeys();
