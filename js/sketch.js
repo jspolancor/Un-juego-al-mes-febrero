@@ -1,4 +1,4 @@
-var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'war-of-the-old-omes', {
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'war-of-the-old-omes', {
     preload: preload,
     create: create,
     update: update,
@@ -11,10 +11,13 @@ function preload() {
     game.load.spritesheet('ms', 'assets/player/sheet.png', 32, 32);
 }
 
+var players = [];
 var player;
 var cursors;
 var fireButton;
 var socket;
+var playerExists;
+var playerIndex;
 
 function create() {
 
@@ -22,12 +25,14 @@ function create() {
 
     game.add.tileSprite(0, 0, 1920, 1920, 'background');
     game.world.setBounds(0, 0, 1920, 1920);
-    game.physics.startSystem(Phaser.Physics.P2JS);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    player = new Player(null, 'Player');
-    player.create();
+    game.scale.pageAlignHorizontally = true;
+    game.scale.pageAlignVertically = true;
 
-    game.physics.p2.enable(player.sprite);
+    player = new Player('Player');
+    player.create(null, null);
+    game.physics.arcade.enable(player.sprite);
 
     fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     cursors = game.input.keyboard.createCursorKeys();
@@ -37,6 +42,7 @@ function create() {
     firebase.auth().onAuthStateChanged(function(user) {
 
         if (user) {
+
             player.id = user.uid;
             player.nick = user.displayName;
             player.playerName.text = user.displayName;
@@ -55,27 +61,51 @@ function create() {
 
     // One of the players are moving
     // Move or create new sprite
-    socket.on('playerMovement', function(data){
-      console.log(data);
+    socket.on('playerData', function(data){
+
+      console.log(data.position);
+
+      playerExists = false;
+      for (var i = 0; i < players.length; i++) {
+          if (players[i].id == data.id) {
+            playerExists = true;
+            playerIndex = i;
+          }
+      }
+
+      if (playerExists) {
+        players[playerIndex].move(data.direction, data.shooting, data.death, false, data.position);
+      }else{
+        var newPlayer = new Player(data.nick);
+        newPlayer.create(data.position.x, data.position.y);
+        game.physics.arcade.enable(newPlayer.sprite);
+        newPlayer.id = data.id;
+        newPlayer.socketId = data.socketId;
+        newPlayer.move(data.direction, data.shooting, data.death, false);
+        players.push(newPlayer);
+      }
     });
 
     // One of the player is disconnected
     // Destroy the sprites and the player
     socket.on('disconnection', function(data){
-
-    });
-
-    // One of the player is dead
-    // Destroy the sprites and the player
-    socket.on('death', function(data){
-
+      for (var i = 0; i < players.length; i++) {
+        if(data.socketId == players[i].socketId){
+          players[i].kill();
+          players.splice(i, 1);
+        }
+      }
     });
 
 }
 
 function update() {
+
   player.listenMovement();
-  player.alignName();
+  for (var i = 0; i < players.length; i++) {
+    players[i].alignName();
+  }
+
 }
 
 function render() {

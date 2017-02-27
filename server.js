@@ -68,16 +68,19 @@ io.sockets.on('connection',
     console.log("We have a new client: " + socket.id);
 
     // When this user emits, client side: socket.emit('otherevent',some data);
-    socket.on('playerMovement',
+    socket.on('playerData',
       function(data) {
 
         // Send it to all other clients
-        socket.broadcast.emit('playerMovement', {
+        socket.broadcast.emit('playerData', {
           direction: data.direction,
           shooting: data.shooting,
           nick: data.nick,
           death: data.death,
-          id: socket.id
+          id: data.id,
+          position: data.position,
+          worldPosition: data.worldPosition,
+          socketId : socket.id
         });
 
         // This is a way to send to everyone including sender
@@ -89,7 +92,7 @@ io.sockets.on('connection',
     socket.on('disconnect', function() {
       console.log("Client " + socket.id + " has disconnected");
       socket.broadcast.emit('disconnection', {
-        id: socket.id
+        socketId: socket.id
       });
     });
 
