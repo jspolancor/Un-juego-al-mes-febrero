@@ -10,6 +10,9 @@ function Player (nick) {
   this.standing = false;
   this.socketId = null;
 
+  this.lifeBar = 40;
+  this.lifePoints = this.lifeBar;
+
   this.create = function(x, y){
 
     this.nickStyle = {
@@ -35,6 +38,8 @@ function Player (nick) {
 
     this.playerName = game.add.text(0, 0, this.nick, this.nickStyle);
 
+    this.healthbar = new HealthBar(game, {width: this.sprite.width, height: 3});
+
     this.weapon = game.add.weapon(8, 'bullet');
     this.weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
     this.weapon.bulletSpeed = 600;
@@ -44,6 +49,8 @@ function Player (nick) {
   }
 
   this.listenMovement = function(){
+
+    this.healthbar.setPosition(this.sprite.position.x + this.sprite.width / 2, this.sprite.position.y - 10);
 
     if (fireButton.isDown && !this.shooting) {
       //console.log('Fire start');
@@ -187,6 +194,7 @@ function Player (nick) {
     this.sprite.destroy();
     this.playerName.destroy();
     this.weapon.destroy();
+    this.healthbar.kill();
   }
 
   this.alignName = function(position){

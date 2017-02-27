@@ -9,6 +9,7 @@ function preload() {
     game.load.image('background', 'assets/floor.jpg');
     game.load.image('bullet', 'assets/bullet.png');
     game.load.spritesheet('ms', 'assets/player/sheet.png', 32, 32);
+    game.load.spritesheet('mo', 'assets/monsters/mo.png', 65, 56);
 }
 
 var players = [];
@@ -18,8 +19,11 @@ var fireButton;
 var socket;
 var playerExists;
 var playerIndex;
+var mo;
+var barConfig;
 
 function create() {
+    barConfig = {width: 100, height: 3};
 
     socket = io.connect(location.href);
 
@@ -35,6 +39,9 @@ function create() {
     player = new Player('Player');
     player.create(null, null);
     game.physics.arcade.enable(player.sprite, false);
+
+    mo = new Mo('mo');
+    mo.create();
 
     fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     cursors = game.input.keyboard.createCursorKeys();
@@ -99,13 +106,46 @@ function create() {
 
 function update() {
 
+  game.physics.arcade.collide(mo.sprite, player.sprite);
+  game.physics.arcade.overlap(player.weapon.bullets, mo.sprite, collisionHandler, null, this);
+  game.physics.arcade.overlap(mo.weapon.bullets, player.sprite, collisionEnemyHandler, null, this);
+
   player.listenMovement();
   for (var i = 0; i < players.length; i++) {
     players[i].alignName();
+    game.physics.arcade.overlap(players[i].weapon.bullets, mo.sprite, collisionHandler, null, this);
+    game.physics.arcade.overlap(mo.weapon.bullets, players[i].sprite, collisionEnemyHandler, null, this);
   }
 
+  mo.healthbar.setPosition(mo.sprite.position.x + mo.sprite.width / 2 - 35, mo.sprite.position.y - 40);
+  mo.monsterName.alignTo(mo.sprite, Phaser.BOTTOM_CENTER, 0);
+  mo.weapon.fire();
+  mo.sprite.angle += 2;
 }
 
 function render() {
     game.debug.text("Arrows to move.", 20, 20);
+}
+
+function collisionHandler(enemy, bullet){
+  mo.lifePoints -= 1;
+  mo.healthbar.setPercent(mo.lifePoints - 1);
+
+  if (mo.lifePoints == 0) {
+    mo.kill();
+  }
+
+  bullet.kill();
+}
+
+function collisionEnemyHandler(enemy, bullet){
+  player.lifePoints -= 1;
+  var percentage = player.lifePoints * 100 / player.lifeBar;
+  player.healthbar.setPercent(percentage);
+
+  if (player.lifePoints == 0) {
+    player.kill();
+  }
+
+  bullet.kill();
 }
