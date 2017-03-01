@@ -1,4 +1,4 @@
-function Mo (nick) {
+function Mo (nick, fireAngle) {
 
   this.sprite = null;
   this.direction = 0;
@@ -6,6 +6,7 @@ function Mo (nick) {
   this.isDeath = true;
   this.monsterName = false;
   this.lifePoints = 100;
+  this.angle = fireAngle;
 
   this.create = function(x, y){
 
@@ -14,7 +15,7 @@ function Mo (nick) {
         fill: "red"
     };
 
-    this.sprite = game.add.sprite(game.world.centerX, game.world.centerY, 'mo');
+    this.sprite = game.add.sprite(x, y, 'mo');
     this.sprite.animations.add('standing', [0, 1], false);
     this.sprite.animations.play('standing', 11, true);
     game.physics.arcade.enable(this.sprite, true);
@@ -26,7 +27,7 @@ function Mo (nick) {
 
     this.lifebar = new Phaser.Line(game.world.centerX, game.world.centerY, game.world.centerX + 200, game.world.centerY + 200);
 
-    this.weapon = game.add.weapon(100, 'bullet');
+    this.weapon = game.add.weapon(100, 'mo-bullet-2');
     this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
     this.weapon.bulletSpeed = 600;
     this.weapon.fireRate = 85;
@@ -132,7 +133,8 @@ function Mo (nick) {
         shooting: this.shooting,
         nick: this.nick,
         death: this.isDeath,
-        position: this.sprite.position
+        position: this.sprite.position,
+        lifePoint : this.lifePoints
       });
     }
   }

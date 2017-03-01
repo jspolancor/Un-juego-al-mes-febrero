@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'war-of-the-old-omes', {
+var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.CANVAS, 'war-of-the-old-omes', {
     preload: preload,
     create: create,
     update: update,
@@ -8,11 +8,15 @@ var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'war-of-the-old-omes', {
 function preload() {
     game.load.image('background', 'assets/floor.jpg');
     game.load.image('bullet', 'assets/bullet.png');
+    game.load.image('mo-bullet', 'assets/monsters/mo-bullet.png');
+    game.load.image('mo-bullet-2', 'assets/monsters/mo-bullet-2.png');
     game.load.spritesheet('ms', 'assets/player/sheet.png', 32, 32);
     game.load.spritesheet('mo', 'assets/monsters/mo.png', 65, 56);
+    game.load.audio('old-one', 'assets/sound/old-one.mp3');
 }
 
 var players = [];
+var mos = [];
 var player;
 var cursors;
 var fireButton;
@@ -21,14 +25,17 @@ var playerExists;
 var playerIndex;
 var mo;
 var barConfig;
+var music;
 
 function create() {
     barConfig = {width: 100, height: 3};
 
     socket = io.connect(location.href);
 
-    game.add.tileSprite(0, 0, 1920, 1920, 'background');
-    game.world.setBounds(0, 0, 1920, 1920);
+    music = game.add.audio('old-one');
+
+    game.add.tileSprite(0, 0, 2920, 2920, 'background');
+    game.world.setBounds(0, 0, 2920, 2920);
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.restitution = 0.9;
     game.physics.arcade.setBoundsToWorld();
@@ -66,6 +73,13 @@ function create() {
 
     });
 
+    socket.emit('getWaveData', {ran: 1});
+    
+    socket.on('wave', function(data){
+      console.log('wave');
+      console.log(data);
+    });
+
     // One of the players are moving
     // Move or create new sprite
     socket.on('playerData', function(data){
@@ -79,7 +93,11 @@ function create() {
       }
 
       if (playerExists) {
+        console.log(data.lifePoints);
         players[playerIndex].move(data.direction, data.shooting, data.death, false, data.position);
+        players[playerIndex].lifePoints = data.lifePoints;
+        var percentage2 = players[playerIndex].lifePoints * 100 / players[playerIndex].lifeBar;
+        players[playerIndex].healthbar.setPercent(percentage2);
       }else{
         var newPlayer = new Player(data.nick);
         newPlayer.create(data.position.x, data.position.y);
@@ -106,25 +124,34 @@ function create() {
 
 function update() {
 
-  game.physics.arcade.collide(mo.sprite, player.sprite);
-  game.physics.arcade.overlap(player.weapon.bullets, mo.sprite, collisionHandler, null, this);
-  game.physics.arcade.overlap(mo.weapon.bullets, player.sprite, collisionEnemyHandler, null, this);
+  for (var i = 0; i < mos.length; i++) {
+    game.physics.arcade.collide(mos[i].sprite, player.sprite);
+    game.physics.arcade.overlap(player.weapon.bullets, mos[i].sprite, collisionHandler, null, this);
+    game.physics.arcade.overlap(mos[i].weapon.bullets, player.sprite, collisionEnemyHandler, null, this);
+    mos[i].healthbar.setPosition(mos[i].sprite.position.x + mos[i].sprite.width / 2 - 35, mos[i].sprite.position.y - 40);
+    mos[i].monsterName.alignTo(mos[i].sprite, Phaser.BOTTOM_CENTER, 0);
+    mos[i].weapon.fire();
+    mos[i].sprite.angle += mos[i].angle;
+  }
 
   player.listenMovement();
   for (var i = 0; i < players.length; i++) {
     players[i].alignName();
-    game.physics.arcade.overlap(players[i].weapon.bullets, mo.sprite, collisionHandler, null, this);
-    game.physics.arcade.overlap(mo.weapon.bullets, players[i].sprite, collisionEnemyHandler, null, this);
+    players[i].healthbar.setPosition(players[i].sprite.position.x + players[i].sprite.width / 2, players[i].sprite.position.y - 10);
+    for (var j = 0; j < mos.length; j++) {
+      game.physics.arcade.overlap(players[i].weapon.bullets, mos[j].sprite, collisionHandler, null, this);
+      game.physics.arcade.overlap(mos[j].weapon.bullets, players[i].sprite, collisionEnemyHandler, null, this);
+    }
   }
 
-  mo.healthbar.setPosition(mo.sprite.position.x + mo.sprite.width / 2 - 35, mo.sprite.position.y - 40);
-  mo.monsterName.alignTo(mo.sprite, Phaser.BOTTOM_CENTER, 0);
-  mo.weapon.fire();
-  mo.sprite.angle += 2;
 }
 
-function render() {
-    game.debug.text("Arrows to move.", 20, 20);
+function start() {
+    music.fadeIn(4000);
+}
+
+function render(){
+
 }
 
 function collisionHandler(enemy, bullet){
@@ -146,6 +173,7 @@ function collisionEnemyHandler(enemy, bullet){
   if (player.lifePoints == 0) {
     player.kill();
   }
+  player.sendMovementData(true);
 
   bullet.kill();
 }

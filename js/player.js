@@ -40,10 +40,10 @@ function Player (nick) {
 
     this.healthbar = new HealthBar(game, {width: this.sprite.width, height: 3});
 
-    this.weapon = game.add.weapon(8, 'bullet');
+    this.weapon = game.add.weapon(15, 'bullet');
     this.weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
     this.weapon.bulletSpeed = 600;
-    this.weapon.fireRate = 300;
+    this.weapon.fireRate = 100;
     this.weapon.trackSprite(this.sprite, 5, 5, false);
 
   }
@@ -210,7 +210,8 @@ function Player (nick) {
         death: this.isDeath,
         id: this.id,
         position: this.sprite.position,
-        worldPosition: this.sprite.worldPosition
+        worldPosition: this.sprite.worldPosition,
+        lifePoints : this.lifePoints
       });
     }
   }
