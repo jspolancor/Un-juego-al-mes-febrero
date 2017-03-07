@@ -15,9 +15,10 @@ function Mo (nick, fireAngle) {
         fill: "red"
     };
 
-    this.sprite = game.add.sprite(x, y, 'mo');
-    this.sprite.animations.add('standing', [0, 1], false);
-    this.sprite.animations.play('standing', 11, true);
+    this.sprite = game.add.sprite(x, y, 'minion');
+    this.sprite.animations.add('standing', [0,1], false);
+    this.sprite.animations.add('walking', [0,1,2,3,4,5,6,7], false);
+    this.sprite.animations.play('walking', 11, true);
     game.physics.arcade.enable(this.sprite, true);
     this.monsterName = game.add.text(0, 0, this.nick, this.nickStyle);
     this.monsterName.alignTo(this.sprite, Phaser.BOTTOM_CENTER, 0);

@@ -159,21 +159,18 @@ var io = require('socket.io').listen(server);
 
 // Register a callback function to run when we have an individual connection
 // This is run for each individual user that connects
-io.sockets.on('connection',
+io.sockets.on('connect',
     // We are given a websocket object in our function
     function(socket) {
 
         console.log("We have a new client: " + socket.id);
 
-        /*When the server starts, create a new wave
-        setInterval(function() {
-            socket.broadcast.emit('wave', {
-              wave: theWave
-            });
-        }, 30000);*/
+        socket.broadcast.emit('wave', {
+          wave: theWave
+        });
 
         socket.on('waveData', function(){
-          socket.broadcast.emit('wave', {
+          io.emit('wave', {
             wave: theWave
           });
         });

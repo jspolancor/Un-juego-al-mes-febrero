@@ -10,8 +10,11 @@ function preload() {
     game.load.image('bullet', 'assets/bullet.png');
     game.load.image('mo-bullet', 'assets/monsters/mo-bullet.png');
     game.load.image('mo-bullet-2', 'assets/monsters/mo-bullet-2.png');
+    game.load.image('deep-1', 'assets/monsters/deep-texture-1.png');
+    game.load.image('deep-2', 'assets/monsters/deep-texture-2.png');
     game.load.spritesheet('ms', 'assets/player/sheet.png', 32, 32);
     game.load.spritesheet('mo', 'assets/monsters/mo.png', 65, 56);
+    game.load.spritesheet('minion', 'assets/monsters/minion.png', 60, 110);
     game.load.audio('old-one', 'assets/sound/old-one.mp3');
 }
 
@@ -26,13 +29,25 @@ var playerIndex;
 var mo;
 var barConfig;
 var music;
+var currentWave = {};
+var waveData;
+var deepOneText, oldOnesText, servitorsText, minionsText;
+var shake;
+var deepOneSprites = [];
+var snakeHead; //head of snake sprite
+var snakeSection = new Array(); //array of sprites that make the snake body sections
+var snakePath = new Array(); //arrary of positions(points) that have to be stored for the path the sections follow
+var numSnakeSections = 300; //number of snake body sections
+var snakeSpacer = 6; //parameter that sets the spacing between sections
 
 function create() {
     barConfig = {width: 100, height: 3};
 
     socket = io.connect(location.href);
-
     music = game.add.audio('old-one');
+
+    shake = new Phaser.Plugin.Shake(game);
+    game.plugins.add(shake);
 
     game.add.tileSprite(0, 0, 2920, 2920, 'background');
     game.world.setBounds(0, 0, 2920, 2920);
@@ -47,11 +62,37 @@ function create() {
     player.create(null, null);
     game.physics.arcade.enable(player.sprite, false);
 
-    mo = new Mo('mo');
-    mo.create();
+    //mo = new Mo('mo');
+    //mo.create();
+
+    waveData = game.add.text(0, 0, '', { font: "12px Arial", fill: "#f2b51a", align: "left", boundsAlignH: "right",
+        boundsAlignV: "top",  });
+    waveData.fixedToCamera = true;
+    waveData.cameraOffset.setTo(10, 10);
+    waveData.setTextBounds(0, 0, window.innerWidth - 20, 0);
 
     fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     cursors = game.input.keyboard.createCursorKeys();
+
+    snakeHead = game.add.sprite(400, 300, 'deep-1');
+    snakeHead.anchor.setTo(0.5, 0.5);
+
+    game.physics.enable(snakeHead, Phaser.Physics.ARCADE);
+
+    //  Init snakeSection array
+    for (var i = 1; i <= numSnakeSections-1; i++)
+    {
+        snakeSection[i] = game.add.sprite(400, 300, 'mo');
+        snakeSection[i].animations.add('standing', [0, 1], false);
+        snakeSection[i].animations.play('standing', 2, true);
+        snakeSection[i].anchor.setTo(0.7, 0.7);
+    }
+
+    //  Init snakePath array
+    for (var i = 0; i <= numSnakeSections * snakeSpacer; i++)
+    {
+        snakePath[i] = new Phaser.Point(400, 300);
+    }
 
     game.camera.follow(player.sprite, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
@@ -73,11 +114,27 @@ function create() {
 
     });
 
-    socket.emit('getWaveData', {ran: 1});
-    
+    socket.emit('waveData', {});
+
+    socket.on('deepOneTriggered', function(){});
+
+    socket.on('oldOneTriggered', function(){});
+
+    socket.on('servitorTriggered', function(){});
+
+    socket.on('minionsTriggered', function(){});
+
     socket.on('wave', function(data){
-      console.log('wave');
-      console.log(data);
+      currentWave = data.wave;
+      waveData.setText('Wave 1 \n');
+      waveData.setText(waveData.text + 'Deep One: ' + currentWave.deepOne.nick + ' ' + currentWave.deepOne.lifePoints + '\n');
+      for (var i = 0; i < currentWave.oldOnes.length; i++) {
+        waveData.setText(waveData.text + 'Old One: ' + currentWave.oldOnes[i].nick + ' ' + currentWave.oldOnes[i].lifePoints + '\n');
+      }
+      for (var i = 0; i < currentWave.servitors.length; i++) {
+        waveData.setText(waveData.text + 'Servitor: ' + currentWave.servitors[i].nick + ' ' + currentWave.servitors[i].lifePoints + '\n');
+      }
+      waveData.setText(waveData.text + 'Minions count: ' + currentWave.minions.length + '\n');
     });
 
     // One of the players are moving
@@ -93,7 +150,6 @@ function create() {
       }
 
       if (playerExists) {
-        console.log(data.lifePoints);
         players[playerIndex].move(data.direction, data.shooting, data.death, false, data.position);
         players[playerIndex].lifePoints = data.lifePoints;
         var percentage2 = players[playerIndex].lifePoints * 100 / players[playerIndex].lifeBar;
@@ -123,6 +179,38 @@ function create() {
 }
 
 function update() {
+
+  snakeHead.body.velocity.setTo(0, 0);
+    snakeHead.body.angularVelocity = 0;
+
+    if (cursors.up.isDown)
+    {
+        snakeHead.body.velocity.copyFrom(game.physics.arcade.velocityFromAngle(snakeHead.angle, 300));
+
+        // Everytime the snake head moves, insert the new location at the start of the array,
+        // and knock the last position off the end
+
+        var part = snakePath.pop();
+
+        part.setTo(snakeHead.x, snakeHead.y);
+
+        snakePath.unshift(part);
+
+        for (var i = 1; i <= numSnakeSections - 1; i++)
+        {
+            snakeSection[i].x = (snakePath[i * snakeSpacer]).x;
+            snakeSection[i].y = (snakePath[i * snakeSpacer]).y;
+        }
+    }
+
+    if (cursors.left.isDown)
+    {
+        snakeHead.body.angularVelocity = -300;
+    }
+    else if (cursors.right.isDown)
+    {
+        snakeHead.body.angularVelocity = 300;
+    }
 
   for (var i = 0; i < mos.length; i++) {
     game.physics.arcade.collide(mos[i].sprite, player.sprite);
